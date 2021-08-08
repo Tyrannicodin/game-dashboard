@@ -1,11 +1,26 @@
 #Manage sidebar and sidebar functions
 
-from tkinter import Tk, Label, Button, Entry, OptionMenu, StringVar, RIGHT
+from tkinter import Tk, Label, Button, Entry, OptionMenu, StringVar, RIGHT, Frame
 from functools import partial
-
+from os import listdir
+from app import delete_file
 
 def sidebar(root):
-    Button(root, text="Create button", command=create_button).pack(side=RIGHT)
+    frame=Frame(root)
+    Button(frame, text="Create button", command=create_button).grid(column=0, row=0)
+    Button(frame, text="Delete button", command=delete_button).grid(column=0, row=1)
+    frame.pack(side=RIGHT)
+
+def delete_button():
+    wm=Tk()
+    wm.title="Delete button"
+    Label(wm, text="Delete button").grid(column=0, row=0)
+    options=listdir("buttons")
+    variable=StringVar(wm)
+    OptionMenu(wm, variable, *options).grid(column=0, row=1)
+    Button(wm, text="confirm", command=partial(delete_file, variable)).grid(column=2, row=2)
+    wm.destroy()
+
 
 def create_button():
     wm=Tk()
@@ -14,8 +29,7 @@ def create_button():
     Label(wm, text="Button type: ").grid(column=0, row=1)
     variable=StringVar(wm)
     variable.set("steam")
-    menu = OptionMenu(wm, variable, "steam", "exe")
-    menu.grid(column=1, row=1)
+    OptionMenu(wm, variable, "steam", "exe").grid(column=1, row=1) 
     Button(wm, text="Confirm", command=partial(getinfo, variable, wm)).grid(column=2, row=3)
     while True:
         try:
