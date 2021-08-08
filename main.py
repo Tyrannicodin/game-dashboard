@@ -9,6 +9,10 @@ root = Tk()
 root.title="Dashboard"
 root.geometry="600x500"
 
-setup(root)
+button_area=Frame(root)
+button_area.pack(side=LEFT, fill="y")
+
+setup(button_area)
+sidebar(root)
 
 root.mainloop()
