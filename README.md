@@ -1,10 +1,10 @@
 # Game dashboard
 
 ## Contents
-1. [About](##about)
-2. [Features](##features)
-3. [To-do](##to-do)
-4. [Releases](##releases)
+1. [About](#about)
+2. [Features](#features)
+3. [To-do](#to-do)
+4. [Releases](#releases)  
 If you think anything here is missing in the documentation create a request under documentation.
 
 ## About
