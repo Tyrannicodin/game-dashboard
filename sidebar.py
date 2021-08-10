@@ -9,15 +9,16 @@ from blueprints import load
 
 def sidebar(root, home):
     frame=Frame(root)
+    frame.pack_propagate(False)
     Button(frame, text="Create button", command=create_button).grid(column=0, row=0)
     Button(frame, text="Delete button", command=delete_button).grid(column=0, row=1)
     Label(frame).grid(column=0, row=2)
-    Button(frame, text="Reload screen", command=partial(ask_load, home)).grid(column=0, row=3)
+    Button(frame, text="Load blueprint", command=partial(ask_load, home)).grid(column=0, row=3)
     frame.pack(side=RIGHT)
 
 def delete_button():
     wm=Tk()
-    wm.title="Delete button"
+    wm.title("Delete button")
     Label(wm, text="Delete button").grid(column=0, row=0)
     options=listdir("buttons")
     variable=StringVar(wm)
@@ -28,7 +29,7 @@ def delete_button():
 
 def create_button():
     wm=Tk()
-    wm.title="Create button"
+    wm.title("Create button")
     Label(wm, text="Create new button").grid(column=0, row=0)
     Label(wm, text="Button type: ").grid(column=0, row=1)
     variable=StringVar(wm)
@@ -88,13 +89,15 @@ def create_exe(name, gameid, imgid, options, wm):
 
 def ask_load(home):
     wm = Tk()
+    wm.title("Load/Reload blueprints")
     options=[]
     for filee in listdir("blueprints"):
         options.append(filee.split(".")[0])
+    Label(wm, text="Select blueprint").grid(column=0, row=0)
     variable=StringVar(wm)
     variable.set("last")
-    OptionMenu(wm, variable, *options).grid(column=0, row=0)
-    Button(wm, text="Load blueprint", command=partial(reloadscreen, variable, home)).grid(column=1, row=2)
+    OptionMenu(wm, variable, *options).grid(column=1, row=0)
+    Button(wm, text="Load blueprint", command=partial(reloadscreen, variable, home)).grid(column=2, row=2)
     wm.mainloop()
 
 def reloadscreen(variable, home):
