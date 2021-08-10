@@ -13,7 +13,7 @@ Game dashboard is a project I have created to make steam game opening easier and
 
 
 ## Features
-Here are the current features. More will be added soon and you can see those on the [To-do](##to-do) section of the readme. Create a issue with the tag enhancement to submit a feature request.
+Here are the current features. More will be added soon and you can see those on the [To-do](#to-do) section of the readme. Create a issue with the tag enhancement to submit a feature request.
 - Create buttons for all steam games using their id and name
 - Create exe buttons with optional arguments
 - View all buttons in a grid and launch them
