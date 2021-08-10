@@ -4,11 +4,15 @@ from tkinter import Tk, Label, Button, Entry, OptionMenu, StringVar, RIGHT, Fram
 from functools import partial
 from os import listdir
 from app import delete_file
+from blueprints import load
 
-def sidebar(root):
+
+def sidebar(root, home):
     frame=Frame(root)
     Button(frame, text="Create button", command=create_button).grid(column=0, row=0)
     Button(frame, text="Delete button", command=delete_button).grid(column=0, row=1)
+    Label(frame).grid(column=0, row=2)
+    Button(frame, text="Reload screen", command=partial(ask_load, home)).grid(column=0, row=3)
     frame.pack(side=RIGHT)
 
 def delete_button():
@@ -81,3 +85,18 @@ def create_exe(name, gameid, imgid, options, wm):
     with open(f"buttons\\{name.get()}.txt", "w") as f:
         f.write(f"exe--{name.get()}--{gameid.get()}--{imgid.get()}--{options.get()}")
     wm.destroy()
+
+def ask_load(home):
+    wm = Tk()
+    options=[]
+    for filee in listdir("blueprints"):
+        options.append(filee.split(".")[0])
+    variable=StringVar(wm)
+    variable.set("last")
+    OptionMenu(wm, variable, *options).grid(column=0, row=0)
+    Button(wm, text="Load blueprint", command=partial(reloadscreen, variable, home)).grid(column=1, row=2)
+    wm.mainloop()
+
+def reloadscreen(variable, home):
+    with open(f"blueprints\\{variable.get()}.txt", "r") as f:
+        load(f.readlines(), home)

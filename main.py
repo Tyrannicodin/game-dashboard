@@ -13,6 +13,6 @@ button_area=Frame(root)
 button_area.pack(side=LEFT, fill="y")
 
 setup(button_area)
-sidebar(root)
+sidebar(root, button_area)
 
 root.mainloop()

@@ -12,6 +12,8 @@ from app import add_app
 from exe import open_exe, exe_image
 
 def load(bp, root):
+    for widget in root.winfo_children():
+        widget.destroy()
     for button in bp:
         pos,name = button.split("--")
         name=name.rstrip()
