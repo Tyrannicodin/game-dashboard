@@ -4,7 +4,7 @@ from tkinter import Tk, Label, Button, Entry, OptionMenu, StringVar, RIGHT, Fram
 from functools import partial
 from os import listdir
 from app import delete_file
-from blueprints import load
+from blueprints import load, blueprint_file
 
 
 def sidebar(root, home):
@@ -13,7 +13,8 @@ def sidebar(root, home):
     Button(frame, text="Create button", command=create_button).grid(column=0, row=0)
     Button(frame, text="Delete button", command=delete_button).grid(column=0, row=1)
     Label(frame).grid(column=0, row=2)
-    Button(frame, text="Load blueprint", command=partial(ask_load, home)).grid(column=0, row=3)
+    Button(frame, text="Create blueprint", command=create_blueprint).grid(column=0, row=3)
+    Button(frame, text="Load blueprint", command=partial(ask_load, home)).grid(column=0, row=4)
     frame.pack(side=RIGHT)
 
 def delete_button():
@@ -103,3 +104,28 @@ def ask_load(home):
 def reloadscreen(variable, home):
     with open(f"blueprints\\{variable.get()}.txt", "r") as f:
         load(f.readlines(), home)
+
+def create_blueprint():
+    wm = Tk()
+    wm.title("Create new blueprint")
+    options=["None"]
+    for option in listdir("buttons"):
+        options.append(option.split(".")[0])
+    Label(wm, text="Select position for button").grid(column=0, columnspan=10, row=0)
+    maxx,y=[10,5]
+    variables=[]
+    for i in range(y):
+        x=0
+        rowlist=[]
+        while x<maxx:
+            variable=StringVar(wm)
+            variable.set("None")
+            OptionMenu(wm, variable, *options).grid(row=i+1, column=x)
+            rowlist.append(variable)
+            x+=1
+        variables.append(rowlist)
+    Label(wm, text="Select name").grid(row=i+2, column=x-1)
+    name=Entry(wm)
+    name.grid(row=i+2, column=x)
+    Button(wm, text="Create blueprint", command=partial(blueprint_file, variables, name, wm)).grid(row=i+3, column=x)
+    wm.mainloop()

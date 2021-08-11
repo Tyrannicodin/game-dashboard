@@ -50,3 +50,18 @@ def load(bp, root):
                     incorrect_argument(f"In button {butinfo[1]}:\nExe button must have 4 or more arguments")
             else:
                 unknown_button_type(f"In button {butinfo[1]}:\nButton type must be steam or exe, not {butinfo[0]}")
+
+def blueprint_file(tdlist, name, destroy):
+    bpname=name.get()
+    name=f"blueprints\\{bpname}.txt"
+    open(name, "w").close()
+    rows=1
+    for row in tdlist:
+        columns=1
+        for column in row:
+            if not column.get()=="None":
+                with open(name, "a") as f:
+                    f.write(f"{columns},{rows}--{column.get()}\n")
+            columns+=1
+        rows+=1
+    destroy.destroy()
