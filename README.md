@@ -20,11 +20,11 @@ Here are the current features. More will be added soon and you can see those on 
 - Create custom layouts
 
 ## To-do
-- Add a visual blueprint editor
-- Allow the screen to be reloaded to view new buttons
-- Add playlists that launch games for you after certain periods of time
-- Add visual editor for buttons
-- Allow for custom images on steam buttons
+- [ ] Add a visual blueprint editor
+- [x] Allow the screen to be reloaded to view new buttons
+- [ ] Add playlists that launch games for you after certain periods of time
+- [ ] Add visual editor for buttons
+- [ ] Allow for custom images on steam buttons
 
 ## Releases
 - [V0.3](https://github.com/Tyrannicodin/game-dashboard/releases/tag/V0.3-beta)-BETA
