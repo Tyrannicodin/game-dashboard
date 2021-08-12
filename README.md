@@ -8,7 +8,7 @@
 If you think anything here is missing in the documentation create a request under documentation.
 
 ## About
-Game dashboard is a project I have created to make steam game opening easier and simpiler by grouping them together in a simple app. This is just done for fun but feel free to use it. I will be continually be working on it and will be adding more features all the time.
+Game dashboard is a project I have created to make steam game opening easier and simpler by grouping them together in a simple app. This is just done for fun but feel free to use it. I will be continually be working on it and will be adding more features all the time.
 **Please note this is in beta**
 
 
@@ -27,5 +27,6 @@ Here are the current features. More will be added soon and you can see those on 
 - [ ] Allow for custom images on steam buttons
 
 ## Releases
+- [V0.4](https://github.com/Tyrannicodin/game-dashboard/releases/tag/V0.4-beta)-BETA
 - [V0.3](https://github.com/Tyrannicodin/game-dashboard/releases/tag/V0.3-beta)-BETA
 - V0.0-V0.2 are not available for download
