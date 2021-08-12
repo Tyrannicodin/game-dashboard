@@ -14,8 +14,9 @@ def sidebar(root, home):
     Button(frame, text="Delete button", command=delete_button).grid(column=0, row=1)
     Label(frame).grid(column=0, row=2)
     Button(frame, text="Create blueprint", command=create_blueprint).grid(column=0, row=3)
-    Button(frame, text="Load blueprint", command=partial(ask_load, home)).grid(column=0, row=4)
-    Button(frame, text="Edit blueprint", command=ask_edit).grid(column=0, row=5)
+    Button(frame, text="Delete blueprint", command=delete_blueprint).grid(column=0, row=4)
+    Button(frame, text="Load blueprint", command=partial(ask_load, home)).grid(column=0, row=5)
+    Button(frame, text="Edit blueprint", command=ask_edit).grid(column=0, row=6)
     frame.pack(side=RIGHT)
 
 def delete_button():
@@ -191,9 +192,9 @@ def load_blueprint_editor(lists, bpname):
 
 def delete_blueprint():
     wm=Tk()
-    wm.title("Delete button")
-    Label(wm, text="Delete button").grid(column=0, row=0)
-    options=listdir("buttons")
+    wm.title("Delete blueprint")
+    Label(wm, text="Delete blueprint").grid(column=0, row=0)
+    options=listdir("blueprints")
     variable=StringVar(wm)
     OptionMenu(wm, variable, *options).grid(column=0, row=1)
     Button(wm, text="confirm", command=partial(delete_bp, variable, wm)).grid(column=2, row=2)
