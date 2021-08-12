@@ -3,7 +3,12 @@
 from setup import setup
 from sidebar import sidebar
 from tkinter import Tk, LEFT, Frame
+from os import chdir
+from os.path import dirname
+from sys import argv
 
+
+chdir(dirname(argv[0]))
 
 root = Tk()
 root.title("Dashboard")
