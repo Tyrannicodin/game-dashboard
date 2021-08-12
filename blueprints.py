@@ -10,6 +10,7 @@ from steam import get_icon, open_game
 from functools import partial
 from app import add_app
 from exe import open_exe, exe_image
+from os import remove
 
 
 def load(bp, root):
@@ -66,4 +67,8 @@ def blueprint_file(tdlist, name, destroy):
                     f.write(f"{columns},{rows}--{column.get()}\n")
             columns+=1
         rows+=1
+    destroy.destroy()
+
+def delete_bp(bp, destroy):
+    remove(f"blueprints\\{bp.get()}")
     destroy.destroy()

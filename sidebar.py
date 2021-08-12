@@ -4,7 +4,7 @@ from tkinter import Tk, Label, Button, Entry, OptionMenu, StringVar, RIGHT, Fram
 from functools import partial
 from os import listdir
 from app import delete_file
-from blueprints import load, blueprint_file
+from blueprints import load, blueprint_file, delete_bp
 
 
 def sidebar(root, home):
@@ -25,8 +25,8 @@ def delete_button():
     options=listdir("buttons")
     variable=StringVar(wm)
     OptionMenu(wm, variable, *options).grid(column=0, row=1)
-    Button(wm, text="confirm", command=partial(delete_file, variable)).grid(column=2, row=2)
-    wm.destroy()
+    Button(wm, text="confirm", command=partial(delete_file, variable, wm)).grid(column=2, row=2)
+    wm.mainloop()
 
 
 def create_button():
@@ -187,4 +187,14 @@ def load_blueprint_editor(lists, bpname):
     name.insert(0, bpname)
     name.grid(row=i+2, column=j)
     Button(wm, text="Confirm edit", command=partial(blueprint_file, variables, name, wm)).grid(row=i+3, column=j)
+    wm.mainloop()
+
+def delete_blueprint():
+    wm=Tk()
+    wm.title("Delete button")
+    Label(wm, text="Delete button").grid(column=0, row=0)
+    options=listdir("buttons")
+    variable=StringVar(wm)
+    OptionMenu(wm, variable, *options).grid(column=0, row=1)
+    Button(wm, text="confirm", command=partial(delete_bp, variable, wm)).grid(column=2, row=2)
     wm.mainloop()
