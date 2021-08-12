@@ -11,6 +11,7 @@ from functools import partial
 from app import add_app
 from exe import open_exe, exe_image
 
+
 def load(bp, root):
     for widget in root.winfo_children():
         widget.destroy()
@@ -60,6 +61,7 @@ def blueprint_file(tdlist, name, destroy):
         columns=1
         for column in row:
             if not column.get()=="None":
+                print(column.get())
                 with open(name, "a") as f:
                     f.write(f"{columns},{rows}--{column.get()}\n")
             columns+=1
