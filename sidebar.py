@@ -150,9 +150,9 @@ def file_blueprint(name, destroy):
     name=name.get()
     filename=f"blueprints\\{name}.txt"
     result=[]
-    for a in range(5):
+    for _1 in range(5):
         d2=[]
-        for b in range(10):
+        for _2 in range(10):
             d2.append("None")
         result.append(d2)
     with open(filename, "r") as f:
