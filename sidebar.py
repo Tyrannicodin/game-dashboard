@@ -5,25 +5,29 @@ from functools import partial
 from os import listdir
 from app import delete_file
 from blueprints import load, blueprint_file, delete_bp
+from errors import unknown_path
 
 
 def sidebar(root, home):
     frame=Frame(root)
     frame.pack_propagate(False)
     Button(frame, text="Create button", command=create_button).grid(column=0, row=0)
-    Button(frame, text="Delete button", command=delete_button).grid(column=0, row=1)
-    Label(frame).grid(column=0, row=2)
-    Button(frame, text="Create blueprint", command=create_blueprint).grid(column=0, row=3)
-    Button(frame, text="Delete blueprint", command=delete_blueprint).grid(column=0, row=4)
-    Button(frame, text="Load blueprint", command=partial(ask_load, home)).grid(column=0, row=5)
-    Button(frame, text="Edit blueprint", command=ask_edit).grid(column=0, row=6)
+    Button(frame, text="Edit button", command=ask_button_edit).grid(column=0, row=1)
+    Button(frame, text="Delete button", command=delete_button).grid(column=0, row=2)
+    Label(frame).grid(column=0, row=3)
+    Button(frame, text="Create blueprint", command=create_blueprint).grid(column=0, row=4)
+    Button(frame, text="Delete blueprint", command=delete_blueprint).grid(column=0, row=5)
+    Button(frame, text="Load blueprint", command=partial(ask_load, home)).grid(column=0, row=6)
+    Button(frame, text="Edit blueprint", command=ask_edit).grid(column=0, row=7)
     frame.pack(side=RIGHT)
 
 def delete_button():
     wm=Tk()
     wm.title("Delete button")
     Label(wm, text="Delete button").grid(column=0, row=0)
-    options=listdir("buttons")
+    options=[]
+    for button in listdir("buttons"):
+        options.append(button.split(".")[0])
     variable=StringVar(wm)
     OptionMenu(wm, variable, *options).grid(column=0, row=1)
     Button(wm, text="confirm", command=partial(delete_file, variable, wm)).grid(column=2, row=2)
@@ -71,7 +75,7 @@ def getinfo(app_type, wm):
         Label(wm, text="Image path: ").grid(column=0, row=3)
         imgid = Entry(wm)
         imgid.grid(column=1, row=3)
-        Label(wm, text="Arguments (optional, separate with ',')").grid(column=0, row=3)
+        Label(wm, text="Arguments (optional, separate with ',')").grid(column=0, row=4)
         options=Entry(wm)
         options.insert(0, "NONE")
         options.grid(column=1, row=4)
@@ -199,3 +203,59 @@ def delete_blueprint():
     OptionMenu(wm, variable, *options).grid(column=0, row=1)
     Button(wm, text="confirm", command=partial(delete_bp, variable, wm)).grid(column=2, row=2)
     wm.mainloop()
+
+def ask_button_edit():
+    wm=Tk()
+    wm.title("Edit button")
+    Label(wm, text="Edit button").grid(column=0, row=0)
+    options=[]
+    for button in listdir("buttons"):
+        options.append(button.split(".")[0])
+    variable=StringVar(wm)
+    variable.set(options[0])
+    OptionMenu(wm, variable, *options).grid(column=0, row=1)
+    Button(wm, text="confirm", command=partial(edit_button, variable, wm)).grid(column=2, row=2)
+    wm.mainloop()
+
+def edit_button(var, destroy):
+    var=var.get()
+    try:
+        with open(f"buttons\\{var}.txt", "r") as f:
+            options=f.readlines()[0].split("--")
+        wm=Tk()
+        app_type=options[0]
+        if app_type=="steam":
+            Label(wm, text="Change information").grid(column=0, row=0)
+            Label(wm, text="Name: ").grid(column=0, row=1)
+            name = Entry(wm)
+            name.insert(0, options[1])
+            name.grid(column=1, row=1)
+            Label(wm, text="Game id: ").grid(column=0, row=2)
+            gameid = Entry(wm)
+            gameid.insert(0, options[2])
+            gameid.grid(column=1, row=2)
+            Button(wm, text="Confirm", command=partial(create_steam, name, gameid, wm)).grid(column=3, row=4)
+        elif app_type=="exe":
+            Label(wm, text="Change information").grid(column=0, row=0)
+            Label(wm, text="Name: ").grid(column=0, row=1)
+            name = Entry(wm)
+            name.insert(0, options[1])
+            name.grid(column=1, row=1)
+            Label(wm, text="Game path: ").grid(column=0, row=2)
+            gameid = Entry(wm)
+            gameid.insert(0, options[2])
+            gameid.grid(column=1, row=2)
+            Label(wm, text="Image path: ").grid(column=0, row=3)
+            imgid = Entry(wm)
+            imgid.insert(0, options[3])
+            imgid.grid(column=1, row=3)
+            Label(wm, text="Arguments (optional, separate with ',')").grid(column=0, row=4)
+            args=Entry(wm)
+            args.insert(0, options[4])
+            args.grid(column=1, row=4)
+            Button(wm, text="Confirm", command=partial(create_exe, name, gameid, imgid, args, wm)).grid(column=3, row=6)
+        else:
+            raise ValueError(f"How did you mess that up??? It can't be {app_type}")
+        destroy.destroy()
+    except FileNotFoundError:
+        unknown_path("Button not found")
