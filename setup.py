@@ -5,7 +5,7 @@ from blueprints import load
 
 
 def setup(root):
-    buttons, blueprints, playlists = [False, False, False]
+    buttons, blueprints, playlists = [False, False, True]
     for fil in listdir():
         if fil=="buttons":
             buttons=True

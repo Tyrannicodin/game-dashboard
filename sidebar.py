@@ -181,7 +181,7 @@ def load_blueprint_editor(lists, bpname):
         j=0
         for item in listed:
             variable=StringVar(wm)
-            variable.set(item)
+            variable.set(item.rstrip())
             OptionMenu(wm, variable, *options).grid(row=i+1, column=j)
             rowlst.append(variable)
             j+=1
