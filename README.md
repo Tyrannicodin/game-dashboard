@@ -16,15 +16,19 @@ Game dashboard is a project I have created to make steam game opening easier and
 Here are the current features. More will be added soon and you can see those on the [To-do](#to-do) section of the readme. Create a issue with the tag enhancement to submit a feature request.
 - Create buttons for all steam games using their id and name
 - Create exe buttons with optional arguments
+- Create buttons in a visual editor
 - View all buttons in a grid and launch them
-- Create custom layouts
+- Create custom layouts in a visual editor
+- Screen reloading
 
 ## To-do
-- [ ] Add a visual blueprint editor
-- [x] Allow the screen to be reloaded to view new buttons
-- [ ] Add playlists that launch games for you after certain periods of time
-- [ ] Add visual editor for buttons
 - [ ] Allow for custom images on steam buttons
+- [ ] Create config file
+  - [ ] Starting blueprint
+  - [ ] Background colour
+  - [ ] Button colour
+  - [ ] Text colour
+- [ ] Auto update config file
 
 ## Releases
 - [V0.4](https://github.com/Tyrannicodin/game-dashboard/releases/tag/V0.4-beta)-BETA
