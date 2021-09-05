@@ -5,7 +5,7 @@ from blueprints import load
 
 
 def setup(root):
-    buttons, blueprints, playlists = [False, False, True]
+    buttons, blueprints, playlists, config = [False, False, True, False]
     for fil in listdir():
         if fil=="buttons":
             buttons=True
@@ -13,13 +13,28 @@ def setup(root):
             blueprints=True
         elif fil=="playlists":
             playlists=True
+        elif fil=="config.config":
+            config=True
     if not buttons:
         mkdir("buttons")
     if not blueprints:
         mkdir("blueprints")
     if not playlists:
         mkdir("playlists")
+    if not config:
+        create_config()
     with open("blueprints\\last.txt", "a") as f:
         pass
-    with open("blueprints\\last.txt", "r") as f:
+    with open("config.config", "r") as f:
+        for line in f.readlines():
+            if line.startswith("last--"):
+                last=line.split("--")[1]
+                break
+        else:
+            last="last"
+    with open(f"blueprints\\{last}.txt", "r") as f:
         load(f.readlines(), root)
+
+def create_config():
+    with open("config.config", "w") as f:
+        f.write("last--last\n")
