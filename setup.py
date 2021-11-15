@@ -1,10 +1,9 @@
-#First time setup
+#First time setup and config parsing
 
 from os import mkdir, listdir
-from blueprints import load
+from yaml import safe_load
 
-
-def setup(root):
+def setup():
     buttons, blueprints, playlists, config = [False, False, True, False]
     for fil in listdir():
         if fil=="buttons":
@@ -25,16 +24,19 @@ def setup(root):
         create_config()
     with open("blueprints\\last.txt", "a") as f:
         pass
-    with open("config.config", "r") as f:
-        for line in f.readlines():
-            if line.startswith("last--"):
-                last=line.split("--")[1]
-                break
-        else:
-            last="last"
+    with open("config.yml", "r") as f:
+        config=safe_load(f)
+    last=config["Blueprints"]["default"]
     with open(f"blueprints\\{last}.txt", "r") as f:
-        load(f.readlines(), root)
+        return config, f.readlines()
 
 def create_config():
-    with open("config.config", "w") as f:
-        f.write("last--last\n")
+    with open("config.yml", "w") as f:
+        f.write("""Background:
+  path: LOCAL\images
+  mode: SLIDESHOW
+  #Only required if static image, otherwise all .png files from the folder are taken
+  interval: 60
+  Location: background.png
+Blueprints:
+  default: last""")

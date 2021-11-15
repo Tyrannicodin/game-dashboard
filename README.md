@@ -20,14 +20,12 @@ Here are the current features. More will be added soon and you can see those on 
 - View all buttons in a grid and launch them
 - Create custom layouts in a visual editor
 - Screen reloading
+- Config file
+  - Starting blueprint
+  - Background
 
 ## To-do
 - [ ] Allow for custom images on steam buttons
-- [ ] Create config file
-  - [ ] Starting blueprint
-  - [ ] Background colour
-  - [ ] Button colour
-  - [ ] Text colour
 - [ ] Auto update config file
 
 ## Releases

@@ -9,7 +9,7 @@ from errors import unknown_path
 
 
 def sidebar(root, home):
-    frame=Frame(root)
+    frame=root.wm
     frame.pack_propagate(False)
     Button(frame, text="Create button", command=create_button).grid(column=0, row=0)
     Button(frame, text="Edit button", command=ask_button_edit).grid(column=0, row=1)

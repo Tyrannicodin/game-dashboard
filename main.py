@@ -1,25 +1,47 @@
 #Main program
 
-from setup import setup
 from sidebar import sidebar
+from background import create_background
+from setup import setup
+from blueprints import load
+
 from tkinter import Tk, LEFT, Frame
+from time import time
 from os import chdir
-from os.path import dirname
-from sys import argv
+from sys import path
 
-
-chdir(dirname(argv[0]))
+chdir(path[0])
 
 root = Tk()
 root.title("Dashboard")
-root.geometry="600x500"
-root.resizable(False, False)
+root.attributes("-fullscreen", True)
+stop=False
+def quit():
+    global stop
+    stop=True
+root.protocol("WM_DELETE_WINDOW", quit)
 
-button_area=Frame(root)
-button_area.pack(side=LEFT, fill="y")
-button_area.pack_propagate(False)
+config, blueprint = setup()
 
-setup(button_area)
-sidebar(root, button_area)
+background, slides, current = create_background(config["Background"], root)
+background.name="BACKGROUND"
+background.place(x=0, y=0, relheight=1, relwidth=1)
+lasttime=time()
 
-root.mainloop()
+load(blueprint, root)
+
+interval=config["Background"]["interval"]
+
+while True:
+    if int(lasttime)+interval==int(time()) and config["Background"]["mode"]=="SLIDESHOW":
+        print("E")
+        lasttime=time()
+        if len(slides)-1==current:
+            current=0
+        background.configure(image=slides[current])
+        background.image=slides[current]
+        current+=1
+    if not stop:
+        root.update()
+    else:
+        break
