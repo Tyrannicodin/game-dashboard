@@ -1,7 +1,7 @@
 # Imports and set directory #
-from tkinter import Entry, StringVar, TclError, Tk, Canvas, Toplevel, OptionMenu, Button
+from tkinter import Entry, StringVar, Tk, Canvas, Toplevel, OptionMenu, Button
+from os import listdir, chdir, startfile, mkdir
 from PIL import Image, ImageFont, ImageDraw
-from os import listdir, chdir, startfile
 from PIL.ImageTk import PhotoImage
 from webbrowser import open as op
 from requests import get
@@ -17,7 +17,6 @@ defaultconfig={
         "mode":"SLIDESHOW",
         "COMMENT":"Only required if slideshow",
         "interval":60,
-        "COMMENT":"Only required if static image, otherwise all .png files from the folder are taken",
         "Location":"background.png"
     },
     "Icons":{
@@ -29,8 +28,8 @@ if "config.json" in listdir():
     with open("config.json", "r") as f:
         config=json.load(f)
 else:
-    with open("config.yml", "w") as f:
-        json.dump(defaultconfig, f, sort_keys=True, indent=4)
+    with open("config.json", "w") as f:
+        json.dump(defaultconfig, f, sort_keys=True, indent=2)
     config=defaultconfig
 
 # Main window setup #
@@ -82,38 +81,45 @@ def ret_command(icon:list):
         raise ValueError(f"Error in {iconname}\n Icon's third value must be steam game id or end with '.exe'")
 
 icons=[]
-i=1
-for icon in config["Icons"]["icons"]:
-    if len(icon)>=5:
-        i+=1
-        if icon[1]=="STEAM":
-            gameid=icon[2]
-            img=Image.open(get(f"https://steamcdn-a.akamaihd.net/steam/apps/{gameid}/header.jpg", stream=True).raw)
-        elif icon[1].endswith(".png"):
-            img=Image.open(icon[1])
-        else:
-            iconname=icon[0]
-            raise ValueError(f"Error in {iconname}\n Icon's second value must be 'STEAM' or end with '.png'")
-        img=img.resize((100, 100))
-        img=img.convert("RGBA")
-        font = ImageFont.truetype(config["Icons"]["font"], 15)
-        fsize=font.getsize(icon[0])
-        text=Image.new("RGBA", (fsize[0], 15), (0, 0, 0, 0))
-        textdraw=ImageDraw.Draw(text)
-        textdraw.text((0, 0), icon[0], font=font)
-        bg=Image.new("RGBA", (100, 100+text.size[1]), (0, 0, 0, 0))
-        bg.paste(img, (0, 0), img)
-        bg.paste(text, (round((bg.size[0]/2)-(text.size[0]/2)), 100), text)
-        bgTk = PhotoImage(bg)
-        icons.append(bgTk)
-        canvBut=maincanv.create_image(icon[3]*100, icon[4]*115, image=bgTk, anchor="nw")
-        maincanv.tag_bind(canvBut, "<Button-1>", ret_command(icon))
+def reload_icons():
+    for icon, i in icons:
+        maincanv.delete(icon[1])
+        icons.pop(i)
+    for icon in config["Icons"]["icons"]:
+        if len(icon)>=5:
+            if icon[1]=="STEAM":
+                gameid=icon[2]
+                img=Image.open(get(f"https://steamcdn-a.akamaihd.net/steam/apps/{gameid}/header.jpg", stream=True).raw)
+            elif icon[1].endswith(".png"):
+                img=Image.open(icon[1])
+            else:
+                iconname=icon[0]
+                raise ValueError(f"Error in {iconname}\n Icon's second value must be 'STEAM' or end with '.png'")
+            img=img.resize((100, 100))
+            img=img.convert("RGBA")
+            font = ImageFont.truetype(config["Icons"]["font"], 15)
+            fsize=font.getsize(icon[0])
+            text=Image.new("RGBA", (fsize[0], 15), (0, 0, 0, 0))
+            textdraw=ImageDraw.Draw(text)
+            textdraw.text((0, 0), icon[0], font=font)
+            bg=Image.new("RGBA", (100, 100+text.size[1]), (0, 0, 0, 0))
+            bg.paste(img, (0, 0), img)
+            bg.paste(text, (round((bg.size[0]/2)-(text.size[0]/2)), 100), text)
+            bgTk = PhotoImage(bg)
+            canvBut=maincanv.create_image(icon[3]*100, icon[4]*115, image=bgTk, anchor="nw")
+            icons.append([bgTk, canvBut])
+            maincanv.tag_bind(canvBut, "<Button-1>", ret_command(icon))
+reload_icons()
 
 # Settings button #
-settings_open=True
+settings_open=False
 settings=Toplevel(main)
 settings.title("Settings")
 settings.geometry("200x200-0+0")
+settings.withdraw()
+def settings_quit():
+    toggle_settings("")
+settings.protocol("WM_DELETE_WINDOW", settings_quit)
 def toggle_settings(event):
     global settings_open
     global settings
@@ -122,13 +128,7 @@ def toggle_settings(event):
         settings.deiconify()
     else:
         settings_open=False
-        try:
-            settings.withdraw()
-        except TclError:
-            settings=Toplevel(main)
-            settings.geometry("200x200-0+0")
-            settings.title("Settings")
-            settings.withdraw()
+        settings.withdraw()
 cog=Image.open("cog.png")
 cog=cog.resize((50, 50))
 cogTk=PhotoImage(cog)
@@ -170,8 +170,30 @@ def check(name, image, file, x, y):
                     config["Icons"]["icons"]=icons
                 with open("config.json", "w") as f:
                     json.dump(config, f, sort_keys=True, indent=2)
+                reload_icons()
 button_creator=Button(settings, text="Create button", command=lambda : create_button(settings))
 button_creator.pack(side="top", fill="x")
+# BUTTON DELETION HANDLER #
+def delete_button(settings):
+    button=Toplevel(settings)
+    button_ans=StringVar(button)
+    with open("config.json", "r") as f:
+        buttons=json.load(f)["Icons"]["icons"]
+        button_selector=OptionMenu(button, button_ans, *[bpart[0] for bpart in buttons])
+    confirm=Button(button, text="Delete button", command=lambda : delete_check(button_ans))
+    button_selector.pack(side="top", fill="x")
+    confirm.pack(side="top", fill="x")
+def delete_check(button_name):
+    button_name=button_name.get()
+    with open("config.json", "r") as f:
+        icons=json.load(f)["Icons"]["icons"]
+    icons.pop(icons.index([icon for icon in icons if icon[0]==button_name][0]))
+    config["Icons"]["icons"]=icons
+    with open("config.json", "w") as f:
+        json.dump(config, f)
+    reload_icons()
+button_deletor=Button(settings, text="Delete button", command=lambda : delete_button(settings))
+button_deletor.pack(side="top", fill="x")
 # Main loop #
 while True:
     if int(lasttime)+interval==int(time()) and config["Background"]["mode"]=="SLIDESHOW":
