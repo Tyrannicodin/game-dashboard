@@ -1,13 +1,13 @@
 # Imports and set directory #
-from tkinter import TclError, Tk, Canvas, Toplevel
+from tkinter import Entry, StringVar, TclError, Tk, Canvas, Toplevel, OptionMenu, Button
 from PIL import Image, ImageFont, ImageDraw
 from os import listdir, chdir, startfile
 from PIL.ImageTk import PhotoImage
 from webbrowser import open as op
-from yaml import safe_load
 from requests import get
 from time import time
 from sys import path
+import json
 chdir(path[0])
 
 # Config #
@@ -25,23 +25,13 @@ defaultconfig={
         "icons":[]
     }
 }
-if "config.yml" in listdir():
-    with open("config.yml", "r") as f:
-        config=safe_load(f)
+if "config.json" in listdir():
+    with open("config.json", "r") as f:
+        config=json.load(f)
 else:
     with open("config.yml", "w") as f:
-        for section in list(defaultconfig.items()):
-            f.write(section[0]+":\n")
-            if type(section[1])==dict:
-                for part in list(section[1].items()):
-                    if not part[0]=="COMMENT":
-                        f.write("  "+str(part[0])+": "+str(part[1])+"\n")
-                    else:
-                        f.write("  #"+str(part[1])+"\n")
-            elif type(section[1])==list:
-                for part in section[1]:
-                    f.write("  "+str(part)+"\n")
-        config=defaultconfig
+        json.dump(defaultconfig, f, sort_keys=True, indent=4)
+    config=defaultconfig
 
 # Main window setup #
 main = Tk()
@@ -119,7 +109,7 @@ for icon in config["Icons"]["icons"]:
         canvBut=maincanv.create_image(icon[3]*100, icon[4]*115, image=bgTk, anchor="nw")
         maincanv.tag_bind(canvBut, "<Button-1>", ret_command(icon))
 
-# Settings button
+# Settings button #
 settings_open=True
 settings=Toplevel(main)
 settings.title("Settings")
@@ -145,8 +135,43 @@ cogTk=PhotoImage(cog)
 icons.append(cogTk)
 setbut=maincanv.create_image(main.winfo_width(), 0, image=cogTk, anchor="ne")
 maincanv.tag_bind(setbut, "<Button-1>", toggle_settings)
-toggle_settings("")
-
+# BUTTON CREATION HANDLER #
+def create_button(settings):
+    button=Toplevel(settings)
+    name=Entry(button)
+    name.insert(0, "Button name")
+    image=Entry(button)
+    image.insert(0, "Image path (Use \"STEAM\" to use default image)")
+    file=Entry(button)
+    file.insert(0, "File path (Enter steam id for steam game)")
+    x=Entry(button)
+    x.insert(0, "X location")
+    y=Entry(button)
+    y.insert(0, "Y location")
+    complete=Button(button, command=lambda : check(name, image, file, x, y), text="Create button")
+    name.pack(side="top", fill="x")
+    image.pack(side="top", fill="x")
+    file.pack(side="top", fill="x")
+    x.pack(side="top", fill="x")
+    y.pack(side="top", fill="x")
+    complete.pack(side="top", fill="x")
+def check(name, image, file, x, y):
+    name=str(name.get())
+    image=str(image.get())
+    file=str(file.get())
+    x=str(x.get())
+    y=str(y.get())
+    if x.isdigit() and y.isdigit():
+        if file.endswith(".exe") or file.isdigit():
+            if image.endswith("png") or image=="STEAM":
+                with open("config.json", "r") as f:
+                    icons=json.load(f)["Icons"]["icons"]
+                    icons.append([name, image, file, int(x), int(y)])
+                    config["Icons"]["icons"]=icons
+                with open("config.json", "w") as f:
+                    json.dump(config, f, sort_keys=True, indent=2)
+button_creator=Button(settings, text="Create button", command=lambda : create_button(settings))
+button_creator.pack(side="top", fill="x")
 # Main loop #
 while True:
     if int(lasttime)+interval==int(time()) and config["Background"]["mode"]=="SLIDESHOW":
@@ -155,8 +180,6 @@ while True:
             current=0
         maincanv.itemconfig(bgId, image=slides[current])
         current+=1
-    if settings_open:
-        settings.update()
     if not stop:
         main.update()
     else:
