@@ -1,7 +1,9 @@
 # Imports and set directory #
 from tkinter import Entry, StringVar, Tk, Canvas, Toplevel, OptionMenu, Button
 from os import listdir, chdir, startfile, mkdir
+from types import ModuleType
 from PIL import Image, ImageFont, ImageDraw
+from importlib import import_module
 from PIL.ImageTk import PhotoImage
 from webbrowser import open as op
 from requests import get
@@ -9,7 +11,6 @@ from time import time
 from sys import path
 import json
 chdir(path[0])
-
 # Config #
 defaultconfig={
     "Background":{
@@ -31,7 +32,6 @@ else:
     with open("config.json", "w") as f:
         json.dump(defaultconfig, f, sort_keys=True, indent=2)
     config=defaultconfig
-
 # Main window setup #
 main = Tk()
 main.title("Desktop")
@@ -45,7 +45,6 @@ maincanv=Canvas(main)
 maincanv.pack(fill="both")
 main.update()
 maincanv.config(height=main.winfo_height(), highlightthickness=0)
-
 # Background setup #
 lasttime=time()
 path=config["Background"]["path"].replace("LOCAL", path[0])
@@ -61,7 +60,20 @@ if config["Background"]["mode"]=="SLIDESHOW":
         current+=1
     except:
         raise IndexError("Target folder must have one or more images in")
-
+# PLUGINS #
+try:
+    for plugin_folder in listdir("plugins"):
+        try:
+            with open(f"plugins\\{plugin_folder}\\meta.json", "r") as f:
+                plugin_meta=json.load(f)
+                canvas = Canvas(maincanv, width=plugin_meta["Width"]*100, height=plugin_meta["Height"]*115)
+                module=import_module(f"plugins.{plugin_folder}.main")
+                module.main(canvas, f"plugins\\{plugin_folder}")
+                canvas.place(x=4*100, y=4*115, anchor="nw")
+        except OSError:
+            pass
+except FileNotFoundError:
+    mkdir("plugins")
 # Add Icons #
 def ret_command(icon:list):
     if icon[2].isdigit():
@@ -79,7 +91,6 @@ def ret_command(icon:list):
     else:
         iconname=icon[0]
         raise ValueError(f"Error in {iconname}\n Icon's third value must be steam game id or end with '.exe'")
-
 icons=[]
 def reload_icons():
     for icon, i in icons:
@@ -110,7 +121,6 @@ def reload_icons():
             icons.append([bgTk, canvBut])
             maincanv.tag_bind(canvBut, "<Button-1>", ret_command(icon))
 reload_icons()
-
 # Settings button #
 settings_open=False
 settings=Toplevel(main)
