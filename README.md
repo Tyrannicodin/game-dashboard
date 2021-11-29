@@ -12,9 +12,12 @@ Game dashboard is a project I have created to make game opening easier and simpl
 ## To-do
 Here are all the features that are currently planned for the next major release. [V2](https://github.com/Tyrannicodin/game-dashboard/projects/2)
 - [ ] Settings window
-    - [ ] Creating and managing icons
+    - [x] Creating and managing icons
     - [ ] Configure plugins
 - [ ] Plugin reading and utilisation
+
+## Plugins
+You can find the plugin information in PLUGINS.md
 
 ## Releases
 - [V1](https://github.com/Tyrannicodin/game-dashboard/releases/tag/V1)
