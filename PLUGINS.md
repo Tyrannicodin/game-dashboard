@@ -5,7 +5,7 @@
 # Use of plugins
 1. Download the plugin from the author.
 2. Put the folder in the plugins directory.
-3. To your config.json file, add a new part with the name as the plugin name (exactly as in the folder name). The other values can be whatever you like apart from the last two values which are the x and y, as usual.
+3. To your config.json file, add a new part with the name as the plugin name (exactly as in the folder name). The other values should be PLUGIN apart from the last two values which are the x and y, as usual.
 
 # Creation of plugins
 1. Create a folder with the following files:

@@ -17,7 +17,7 @@ Here are all the features that are currently planned for the next major release.
 - [ ] Plugin reading and utilisation
 
 ## Plugins
-You can find the plugin information in PLUGINS.md
+You can find the plugin information in the [PLUGINS](https://github.com/Tyrannicodin/game-dashboard/blob/main/PLUGINS.md) readme.
 
 ## Releases
 - [V1](https://github.com/Tyrannicodin/game-dashboard/releases/tag/V1)
