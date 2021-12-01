@@ -16,7 +16,6 @@ defaultconfig={
     "Background":{
         "path":"LOCAL",
         "mode":"SLIDESHOW",
-        "COMMENT":"Only required if slideshow",
         "interval":60,
         "Location":"background.png"
     },
@@ -60,20 +59,24 @@ if config["Background"]["mode"]=="SLIDESHOW":
         current+=1
     except:
         raise IndexError("Target folder must have one or more images in")
-# PLUGINS #
+# PLUGINS SETUP #
 try:
-    for plugin_folder in listdir("plugins"):
+    listdir("plugins")
+except:
+    mkdir("plugins")
+def get_plugin(plugin_folder):
+    if plugin_folder in listdir("plugins"):
         try:
             with open(f"plugins\\{plugin_folder}\\meta.json", "r") as f:
                 plugin_meta=json.load(f)
                 canvas = Canvas(maincanv, width=plugin_meta["Width"]*100, height=plugin_meta["Height"]*115)
                 module=import_module(f"plugins.{plugin_folder}.main")
                 module.main(canvas, f"plugins\\{plugin_folder}")
-                canvas.place(x=4*100, y=4*115, anchor="nw")
+                return canvas
         except OSError:
             pass
-except FileNotFoundError:
-    mkdir("plugins")
+    else:
+        pass
 # Add Icons #
 def ret_command(icon:list):
     if icon[2].isdigit():
@@ -93,33 +96,37 @@ def ret_command(icon:list):
         raise ValueError(f"Error in {iconname}\n Icon's third value must be steam game id or end with '.exe'")
 icons=[]
 def reload_icons():
-    for icon, i in icons:
-        maincanv.delete(icon[1])
-        icons.pop(i)
+    global icons
+    for icon in icons:
+        maincanv.delete(icon)
+    icons=[]
     for icon in config["Icons"]["icons"]:
         if len(icon)>=5:
-            if icon[1]=="STEAM":
-                gameid=icon[2]
-                img=Image.open(get(f"https://steamcdn-a.akamaihd.net/steam/apps/{gameid}/header.jpg", stream=True).raw)
-            elif icon[1].endswith(".png"):
-                img=Image.open(icon[1])
+            if not icon[1]=="PLUGIN":
+                if icon[1]=="STEAM":
+                    gameid=icon[2]
+                    img=Image.open(get(f"https://steamcdn-a.akamaihd.net/steam/apps/{gameid}/header.jpg", stream=True).raw)
+                elif icon[1].endswith(".png"):
+                    img=Image.open(icon[1])
+                else:
+                    iconname=icon[0]
+                    raise ValueError(f"Error in {iconname}\n Icon's second value must be 'STEAM' or end with '.png'")
+                img=img.resize((100, 100))
+                img=img.convert("RGBA")
+                font = ImageFont.truetype(config["Icons"]["font"], 15)
+                fsize=font.getsize(icon[0])
+                text=Image.new("RGBA", (fsize[0], 15), (0, 0, 0, 0))
+                textdraw=ImageDraw.Draw(text)
+                textdraw.text((0, 0), icon[0], font=font)
+                bg=Image.new("RGBA", (100, 100+text.size[1]), (0, 0, 0, 0))
+                bg.paste(img, (0, 0), img)
+                bg.paste(text, (round((bg.size[0]/2)-(text.size[0]/2)), 100), text)
+                bgTk = PhotoImage(bg)
+                canvBut=maincanv.create_image(icon[3]*100, icon[4]*115, image=bgTk, anchor="nw")
+                icons.append([bgTk, canvBut])
+                maincanv.tag_bind(canvBut, "<Button-1>", ret_command(icon))
             else:
-                iconname=icon[0]
-                raise ValueError(f"Error in {iconname}\n Icon's second value must be 'STEAM' or end with '.png'")
-            img=img.resize((100, 100))
-            img=img.convert("RGBA")
-            font = ImageFont.truetype(config["Icons"]["font"], 15)
-            fsize=font.getsize(icon[0])
-            text=Image.new("RGBA", (fsize[0], 15), (0, 0, 0, 0))
-            textdraw=ImageDraw.Draw(text)
-            textdraw.text((0, 0), icon[0], font=font)
-            bg=Image.new("RGBA", (100, 100+text.size[1]), (0, 0, 0, 0))
-            bg.paste(img, (0, 0), img)
-            bg.paste(text, (round((bg.size[0]/2)-(text.size[0]/2)), 100), text)
-            bgTk = PhotoImage(bg)
-            canvBut=maincanv.create_image(icon[3]*100, icon[4]*115, image=bgTk, anchor="nw")
-            icons.append([bgTk, canvBut])
-            maincanv.tag_bind(canvBut, "<Button-1>", ret_command(icon))
+                get_plugin(icon[0]).place(x=icon[3]*100, y=icon[4]*115, anchor="nw")
 reload_icons()
 # Settings button #
 settings_open=False
@@ -172,8 +179,8 @@ def check(name, image, file, x, y):
     x=str(x.get())
     y=str(y.get())
     if x.isdigit() and y.isdigit():
-        if file.endswith(".exe") or file.isdigit():
-            if image.endswith("png") or image=="STEAM":
+        if file.endswith(".exe") or file.isdigit() or file=="PLUGIN":
+            if image.endswith("png") or image=="STEAM" or image=="PLUGIN":
                 with open("config.json", "r") as f:
                     icons=json.load(f)["Icons"]["icons"]
                     icons.append([name, image, file, int(x), int(y)])
